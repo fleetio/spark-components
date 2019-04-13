@@ -3,6 +3,7 @@ module Components
     include ActiveModel::Validations
 
     attr_accessor :yield
+    attr_reader :parents
 
     def self.model_name
       ActiveModel::Name.new(Components::Element)
@@ -42,6 +43,7 @@ module Components
         return get_instance_variable(multiple ? plural_name : name) unless attributes || block
 
         element = self.class.elements[name][:class].new(@view, attributes, &block)
+        element.parent = self
         element.yield = element.render if element.respond_to?(:render)
 
         if multiple
@@ -82,6 +84,14 @@ module Components
       initialize_elements
       @yield = block_given? ? @view.capture(self, &block) : nil
       validate!
+    end
+
+    def parent=(obj)
+      @parents = [obj.parents, obj].flatten.compact
+    end
+
+    def parent
+      parents.last
     end
 
     def to_s

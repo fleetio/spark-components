@@ -232,6 +232,30 @@ class ComponentTest < ActiveSupport::TestCase
     assert_equal "<h2>test</h2>", component.header.to_s
   end
 
+  test "elements should be able to interact with their parent component" do
+    list_component = Class.new(Components::Component) do
+      element :item, multiple: true
+
+      element :group do
+        element :item, multiple: true
+
+        def render
+          parent.items << "(#{items.join(', ')})"
+        end
+      end
+    end
+
+    list = list_component.new(view_class.new)
+    list.item { "1" }
+    list.group do |group|
+      group.item { "1.1" }
+      group.item { "1.2" }
+    end
+    list.item { "2" }
+
+    assert_equal "1, (1.1, 1.2), 2", list.items.join(", ")
+  end
+
   private
 
   def view_class
