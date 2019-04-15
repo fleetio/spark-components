@@ -3,7 +3,7 @@ module Components
     include ActiveModel::Validations
 
     attr_accessor :yield
-    attr_reader :parents
+    attr_reader :parents, :attr
 
     def self.model_name
       ActiveModel::Name.new(Components::Element)
@@ -18,6 +18,53 @@ module Components
 
       define_method_or_raise(name) do
         get_instance_variable(name)
+      end
+    end
+
+    def self.tag_attributes
+      @tag_attributes ||= {
+        class: Attributes::Classname.new,
+        root:  Attributes::Hash.new,
+        data:  Attributes::Data.new,
+        aria:  Attributes::Aria.new
+      }
+    end
+
+    def self.set_attr(name, *args)
+      tag_attributes[name].add(*add_attributes(*args))
+    end
+
+    def self.base_class(name)
+      tag_attributes[:class].base = name
+    end
+
+    def self.class_attr(*args)
+      tag_attributes[:class].add(*args)
+    end
+
+    def self.data_attr(*args)
+      set_attr(:data, *args)
+    end
+
+    def self.aria_attr(*args)
+      set_attr(:aria, *args)
+    end
+
+    def self.root_attr(*args)
+      set_attr(:root, *args)
+    end
+
+    def self.add_attributes(*args)
+      args.each_with_object([]) do |arg, obj|
+        if arg.is_a?(Hash)
+          arg.each do |k, v|
+            attribute(k.to_sym, default: v)
+            obj << k.to_sym
+          end
+        else
+          obj << arg.to_sym
+          attribute(arg.to_sym)
+        end
       end
     end
 
@@ -80,11 +127,15 @@ module Components
 
     def initialize(view, attributes = nil, &block)
       @view = view
+      @tag_attributes = self.class.tag_attributes
       initialize_attributes(attributes || {})
       initialize_elements
       @yield = block_given? ? @view.capture(self, &block) : nil
       validate!
+      after_init
     end
+
+    def after_init; end
 
     def parent=(obj)
       @parents = [obj.parents, obj].flatten.compact
@@ -94,6 +145,33 @@ module Components
       parents.last
     end
 
+    # Set tag attribute values from from parameters
+    def update_attr(name)
+      %i[aria data root].each do |el|
+        @tag_attributes[el][name] = get_instance_variable(name) if @tag_attributes[el].has_key?(name)
+      end
+    end
+
+    def classname
+      @tag_attributes[:class]
+    end
+
+    def base_class
+      classname.base
+    end
+
+    def data
+      @tag_attributes[:data]
+    end
+
+    def aria
+      @tag_attributes[:aria]
+    end
+
+    def root_attributes
+      @tag_attributes[:root]
+    end
+
     def to_s
       @yield
     end
@@ -101,8 +179,14 @@ module Components
     protected
 
     def initialize_attributes(attributes)
+      # support default data, class, and aria attribute names
+      @tag_attributes[:data].add(*attributes.delete(:data)) if attributes[:data]
+      @tag_attributes[:aria].add(*attributes.delete(:aria)) if attributes[:aria]
+      @tag_attributes[:class].add(*attributes.delete(:class)) if attributes[:class]
+
       self.class.attributes.each do |name, options|
         set_instance_variable(name, attributes[name] || (options[:default] && options[:default].dup))
+        update_attr(name)       
       end
     end
 

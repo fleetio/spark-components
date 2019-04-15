@@ -1,5 +1,6 @@
 require "components/element"
 require "components/component"
+require "components/attributes"
 require "components/engine"
 
 module Components
