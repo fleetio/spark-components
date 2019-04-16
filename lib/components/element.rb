@@ -55,14 +55,14 @@ module Components
     end
 
     def self.add_attributes(*args)
-      args.each_with_object([]) do |arg, obj|
+      args.each_with_object({}) do |arg, obj|
         if arg.is_a?(Hash)
-          arg.each do |k, v|
-            attribute(k.to_sym, default: v)
-            obj << k.to_sym
+          arg.each do |attr, default|
+            attribute(attr.to_sym, default: default)
+            obj[attr.to_sym] = default
           end
         else
-          obj << arg.to_sym
+          obj[arg.to_sym] = nil
           attribute(arg.to_sym)
         end
       end

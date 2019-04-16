@@ -57,7 +57,7 @@ module Components
       end
 
       def base
-        self[0] if @base_set
+        first if @base_set
       end
 
       # Returns clasess which are not defined as a base class
