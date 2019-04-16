@@ -24,9 +24,9 @@ module Components
     def self.tag_attributes
       @tag_attributes ||= {
         class: Attributes::Classname.new,
-        root:  Attributes::Hash.new,
         data:  Attributes::Data.new,
-        aria:  Attributes::Aria.new
+        aria:  Attributes::Aria.new,
+        tag:   Attributes::Hash.new
       }
     end
 
@@ -38,7 +38,7 @@ module Components
       tag_attributes[:class].base = name
     end
 
-    def self.class_attr(*args)
+    def self.add_class(*args)
       tag_attributes[:class].add(*args)
     end
 
@@ -50,8 +50,8 @@ module Components
       set_attr(:aria, *args)
     end
 
-    def self.root_attr(*args)
-      set_attr(:root, *args)
+    def self.tag_attr(*args)
+      set_attr(:tag, *args)
     end
 
     def self.add_attributes(*args)
@@ -147,29 +147,44 @@ module Components
 
     # Set tag attribute values from from parameters
     def update_attr(name)
-      %i[aria data root].each do |el|
+      %i[aria data tag].each do |el|
         @tag_attributes[el][name] = get_instance_variable(name) if @tag_attributes[el].has_key?(name)
       end
     end
 
-    def classname
+    def classnames
       @tag_attributes[:class]
     end
 
-    def base_class
+    def base_class(name=nil)
+      classname.base = name unless name.nil?
       classname.base
     end
 
-    def data
-      @tag_attributes[:data]
+    def add_class(*args)
+      classname.add(*args)
     end
 
-    def aria
-      @tag_attributes[:aria]
+    def child_class(name, separator: '-')
+      [base_class, name].join('-') unless base_class.nil?
     end
 
-    def root_attributes
-      @tag_attributes[:root]
+    def data_attr(*args)
+      @tag_attributes[:data].add(*args)
+    end
+
+    def aria_attr(*args)
+      @tag_attributes[:aria].add(*args)
+    end
+
+    def tag_attr(*args)
+      @tag_attributes[:tag].add(*args)
+    end
+
+    def all_attr(add_class: true)
+      attrs = [data_attr, aria_attr, tag_attr]
+      attrs.unshift %(class="#{classnames}") if add_class
+      attrs.join(' ').html_safe
     end
 
     def to_s

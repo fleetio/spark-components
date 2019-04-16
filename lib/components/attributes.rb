@@ -3,25 +3,25 @@ module Components
     class Hash < Hash
       alias add merge!
 
-      def base; end
+      def prefix; end
 
       # Output all attributes as [base-]name="value"
       def to_s
         each_with_object([]) do |(name, value), array|
-          name = [base, name].compact.join('-')
+          name = [prefix, name].compact.join('-')
           array << %(#{name.dasherize}="#{value}") unless value.nil?
-        end.join(" ")
+        end.join(" ").html_safe
       end
     end
 
     class Data < Hash
-      def base
+      def prefix
         :data
       end
     end
 
     class Aria < Hash
-      def base
+      def prefix
         :aria
       end
     end
@@ -70,7 +70,7 @@ module Components
       end
 
       def to_s
-        join(" ")
+        join(" ").html_safe
       end
     end
   end

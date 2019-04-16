@@ -259,55 +259,64 @@ class ComponentTest < ActiveSupport::TestCase
   test "class_attr and base_class modify the default classname attribute" do
     component_class = Class.new(Components::Component) do
       base_class :one
-      class_attr :two, :three
+      add_class :two, :three
     end
-    component = component_class.new(view_class.new, class: 'four five')
+    component = component_class.new(view_class.new, class: "four five")
 
-    assert_equal %(one two three four five), component.classname.to_s
-    assert_equal :one, component.classname.base
+    assert_equal "one two three four five", component.classnames.to_s
+    assert_equal :one, component.classnames.base
   end
 
   test "root_attr defines component attributes which can modify root attributes" do
     component_class = Class.new(Components::Component) do
-      root_attr :foo, :bar, a: 'b'
+      tag_attr :foo, :bar, a: "b"
     end
-    component = component_class.new(view_class.new, foo: 'baz')
-    assert_equal %(foo="baz" a="b"), component.root_attributes.to_s
+    component = component_class.new(view_class.new, foo: "baz")
+    assert_equal %(foo="baz" a="b"), component.tag_attr.to_s
 
-    component.root_attributes.add bar: true
-    assert_equal %(foo="baz" bar="true" a="b"), component.root_attributes.to_s
+    component.tag_attr.add bar: true
+    assert_equal %(foo="baz" bar="true" a="b"), component.tag_attr.to_s
   end
 
   test "data_attr defines component attributes which can modify data- attributes" do
     component_class = Class.new(Components::Component) do
-      data_attr :foo, :bar, a: 'b'
+      data_attr :foo, :bar, a: "b"
     end
-    component = component_class.new(view_class.new, foo: 'baz')
-    assert_equal %(data-foo="baz" data-a="b"), component.data.to_s
+    component = component_class.new(view_class.new, foo: "baz")
+    assert_equal %(data-foo="baz" data-a="b"), component.data_attr.to_s
 
-    component.data.add bar: true
-    assert_equal %(data-foo="baz" data-bar="true" data-a="b"), component.data.to_s
-  end
-
-  test "data, class, and aria component options sets default attributes" do
-    component_class = Class.new(Components::Component) do
-    end
-    component = component_class.new(view_class.new, data: { foo: 'bar' }, class: 'one two', aria: { three: 'four' })
-
-    assert_equal %(data-foo="bar"), component.data.to_s
-    assert_equal "one two", component.classname.to_s
-    assert_equal %(aria-three="four"), component.aria.to_s
+    component.data_attr bar: true
+    assert_equal %(data-foo="baz" data-bar="true" data-a="b"), component.data_attr.to_s
   end
 
   test "aria_attr defines component attributes which can modify aria- attributes" do
     component_class = Class.new(Components::Component) do
-      aria_attr :foo, :bar, a: 'b'
+      aria_attr :foo, :bar, a: "b"
     end
-    component = component_class.new(view_class.new, foo: 'baz')
-    assert_equal %(aria-foo="baz" aria-a="b"), component.aria.to_s
+    component = component_class.new(view_class.new, foo: "baz")
+    assert_equal %(aria-foo="baz" aria-a="b"), component.aria_attr.to_s
 
-    component.aria.add bar: true
-    assert_equal %(aria-foo="baz" aria-bar="true" aria-a="b"), component.aria.to_s
+    component.aria_attr bar: true
+    assert_equal %(aria-foo="baz" aria-bar="true" aria-a="b"), component.aria_attr.to_s
+  end
+
+  test "data, class, and aria component options sets default attributes" do
+    component_class = Class.new(Components::Component)
+    component = component_class.new(view_class.new, data: { foo: "bar" }, class: "one two", aria: { three: "four" })
+
+    assert_equal %(data-foo="bar"), component.data_attr.to_s
+    assert_equal "one two", component.classnames.to_s
+    assert_equal %(aria-three="four"), component.aria_attr.to_s
+  end
+
+  test "all_attr outputs data, class, aria, and tag attributes" do
+    component_class = Class.new(Components::Component) do
+      tag_attr role: "nav"
+    end
+    component = component_class.new(view_class.new, data: { foo: "bar" }, class: "one two", aria: { three: "four" })
+
+    assert_equal %(class="one two" data-foo="bar" aria-three="four" role="nav"), component.all_attr
+    assert_equal %(data-foo="bar" aria-three="four" role="nav"), component.all_attr(add_class: false)
   end
 
   private
