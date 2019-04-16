@@ -9,7 +9,7 @@ module Components
       def to_s
         each_with_object([]) do |(name, value), array|
           name = [base, name].compact.join('-')
-          array << %(#{name.dasherize}="#{value}")
+          array << %(#{name.dasherize}="#{value}") unless value.nil?
         end.join(" ")
       end
     end
@@ -27,8 +27,6 @@ module Components
     end
 
     class Classname < Array
-      alias add push
-
       def initialize(*args, &block)
         super(*args, &block)
         @base_set = false
@@ -54,6 +52,8 @@ module Components
           unshift klass
           @base_set = true
         end
+
+        self.uniq!
       end
 
       def base
@@ -63,6 +63,10 @@ module Components
       # Returns clasess which are not defined as a base class
       def modifiers
         @base_set ? self[1..size] : self
+      end
+
+      def add(*args)
+        push(*args.uniq.reject { |a| a.nil? || include?(a) })
       end
 
       def to_s

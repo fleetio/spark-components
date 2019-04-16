@@ -31,7 +31,7 @@ module Components
     end
 
     def self.set_attr(name, *args)
-      tag_attributes[name].add(*add_attributes(*args))
+      tag_attributes[name].add(add_attributes(*args))
     end
 
     def self.base_class(name)
@@ -58,8 +58,8 @@ module Components
       args.each_with_object({}) do |arg, obj|
         if arg.is_a?(Hash)
           arg.each do |attr, default|
-            attribute(attr.to_sym, default: default)
             obj[attr.to_sym] = default
+            attribute(attr.to_sym, default: default)
           end
         else
           obj[arg.to_sym] = nil
@@ -180,8 +180,8 @@ module Components
 
     def initialize_attributes(attributes)
       # support default data, class, and aria attribute names
-      @tag_attributes[:data].add(*attributes.delete(:data)) if attributes[:data]
-      @tag_attributes[:aria].add(*attributes.delete(:aria)) if attributes[:aria]
+      @tag_attributes[:data].add(attributes.delete(:data)) if attributes[:data]
+      @tag_attributes[:aria].add(attributes.delete(:aria)) if attributes[:aria]
       @tag_attributes[:class].add(*attributes.delete(:class)) if attributes[:class]
 
       self.class.attributes.each do |name, options|

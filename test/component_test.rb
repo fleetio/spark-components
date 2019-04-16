@@ -256,6 +256,60 @@ class ComponentTest < ActiveSupport::TestCase
     assert_equal "1, (1.1, 1.2), 2", list.items.join(", ")
   end
 
+  test "class_attr and base_class modify the default classname attribute" do
+    component_class = Class.new(Components::Component) do
+      base_class :one
+      class_attr :two, :three
+    end
+    component = component_class.new(view_class.new, class: 'four five')
+
+    assert_equal %(one two three four five), component.classname.to_s
+    assert_equal :one, component.classname.base
+  end
+
+  test "root_attr defines component attributes which can modify root attributes" do
+    component_class = Class.new(Components::Component) do
+      root_attr :foo, :bar, a: 'b'
+    end
+    component = component_class.new(view_class.new, foo: 'baz')
+    assert_equal %(foo="baz" a="b"), component.root_attributes.to_s
+
+    component.root_attributes.add bar: true
+    assert_equal %(foo="baz" bar="true" a="b"), component.root_attributes.to_s
+  end
+
+  test "data_attr defines component attributes which can modify data- attributes" do
+    component_class = Class.new(Components::Component) do
+      data_attr :foo, :bar, a: 'b'
+    end
+    component = component_class.new(view_class.new, foo: 'baz')
+    assert_equal %(data-foo="baz" data-a="b"), component.data.to_s
+
+    component.data.add bar: true
+    assert_equal %(data-foo="baz" data-bar="true" data-a="b"), component.data.to_s
+  end
+
+  test "data, class, and aria component options sets default attributes" do
+    component_class = Class.new(Components::Component) do
+    end
+    component = component_class.new(view_class.new, data: { foo: 'bar' }, class: 'one two', aria: { three: 'four' })
+
+    assert_equal %(data-foo="bar"), component.data.to_s
+    assert_equal "one two", component.classname.to_s
+    assert_equal %(aria-three="four"), component.aria.to_s
+  end
+
+  test "aria_attr defines component attributes which can modify aria- attributes" do
+    component_class = Class.new(Components::Component) do
+      aria_attr :foo, :bar, a: 'b'
+    end
+    component = component_class.new(view_class.new, foo: 'baz')
+    assert_equal %(aria-foo="baz" aria-a="b"), component.aria.to_s
+
+    component.aria.add bar: true
+    assert_equal %(aria-foo="baz" aria-bar="true" aria-a="b"), component.aria.to_s
+  end
+
   private
 
   def view_class
