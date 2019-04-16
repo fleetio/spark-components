@@ -162,7 +162,7 @@ module Components
     end
 
     def add_class(*args)
-      classname.add(*args)
+      classnames.add(*args)
     end
 
     def child_class(name, separator: '-')
