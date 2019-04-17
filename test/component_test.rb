@@ -265,9 +265,10 @@ class ComponentTest < ActiveSupport::TestCase
 
     assert_equal "one two three four five", component.classnames.to_s
     assert_equal :one, component.classnames.base
+    assert_equal 'one-two', component.child_class('two')
   end
 
-  test "root_attr defines component attributes which can modify root attributes" do
+  test "tag_attr defines component attributes which can modify root tag attributes" do
     component_class = Class.new(Components::Component) do
       tag_attr :foo, :bar, a: "b"
     end

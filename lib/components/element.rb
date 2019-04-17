@@ -157,8 +157,8 @@ module Components
     end
 
     def base_class(name=nil)
-      classname.base = name unless name.nil?
-      classname.base
+      classnames.base = name unless name.nil?
+      classnames.base
     end
 
     def add_class(*args)
