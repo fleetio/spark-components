@@ -320,6 +320,34 @@ class ComponentTest < ActiveSupport::TestCase
     assert_equal %(data-foo="bar" aria-three="four" role="nav"), component.all_attr(add_class: false)
   end
 
+  test "tag attributes are isolated across components" do
+    component_class = Class.new(Components::Component) do
+      add_attributes type: "default"
+
+      def after_init
+        add_class "type-#{@type}"
+        data_attr type: type
+        aria_attr type: type
+        tag_attr type: type
+      end
+    end
+
+    component = component_class.new(view_class.new)
+    component_2 = component_class.new(view_class.new, type: "alert")
+
+    assert_equal "type-default", component.classnames.to_s
+    assert_equal "type-alert", component_2.classnames.to_s
+
+    assert_equal %(data-type="default"), component.data_attr.to_s
+    assert_equal %(data-type="alert"), component_2.data_attr.to_s
+
+    assert_equal %(aria-type="default"), component.aria_attr.to_s
+    assert_equal %(aria-type="alert"), component_2.aria_attr.to_s
+
+    assert_equal %(type="default"), component.tag_attr.to_s
+    assert_equal %(type="alert"), component_2.tag_attr.to_s
+  end
+
   private
 
   def view_class

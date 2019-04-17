@@ -127,8 +127,9 @@ module Components
 
     def initialize(view, attributes = nil, &block)
       @view = view
-      @tag_attributes = self.class.tag_attributes
-      initialize_attributes(attributes || {})
+      attributes ||= {}
+      initialize_tag_attributes(attributes)
+      initialize_attributes(attributes)
       initialize_elements
       @yield = block_given? ? @view.capture(self, &block) : nil
       validate!
@@ -193,12 +194,18 @@ module Components
 
     protected
 
-    def initialize_attributes(attributes)
-      # support default data, class, and aria attribute names
-      @tag_attributes[:data].add(attributes.delete(:data)) if attributes[:data]
-      @tag_attributes[:aria].add(attributes.delete(:aria)) if attributes[:aria]
-      @tag_attributes[:class].add(*attributes.delete(:class)) if attributes[:class]
+    def initialize_tag_attributes(attributes)
+      @tag_attributes = self.class.tag_attributes.each_with_object({}) do |(name, options), obj|
+        obj[name] = options.dup
+      end
 
+      # support default data, class, and aria attribute names
+      data_attr(attributes.delete(:data)) if attributes[:data]
+      aria_attr(attributes.delete(:aria)) if attributes[:aria]
+      add_class(*attributes.delete(:class)) if attributes[:class]
+    end
+
+    def initialize_attributes(attributes)
       self.class.attributes.each do |name, options|
         set_instance_variable(name, attributes[name] || (options[:default] && options[:default].dup))
         update_attr(name)       
