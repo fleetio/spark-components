@@ -1,9 +1,12 @@
 module Components
   module Attributes
     class Hash < Hash
-      alias add merge!
-
       def prefix; end
+
+      def add(obj=nil)
+        merge!(obj) unless obj.nil?
+        self
+      end
 
       # Output all attributes as [base-]name="value"
       def to_s
