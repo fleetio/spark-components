@@ -10,6 +10,10 @@ module Components
       ActiveSupport.on_load :action_controller do
         helper Components::ComponentHelper
       end
+
+      ActiveSupport.on_load :action_view do
+        include Components::ComponentHelper
+      end
     end
 
     initializer "components.view_paths" do
