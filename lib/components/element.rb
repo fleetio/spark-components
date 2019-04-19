@@ -23,10 +23,10 @@ module Components
 
     def self.tag_attributes
       @tag_attributes ||= {
-        class: Attributes::Classname.new,
-        data:  Attributes::Data.new,
-        aria:  Attributes::Aria.new,
-        tag:   Attributes::Hash.new
+        class: Components::Attributes::Classname.new,
+        data:  Components::Attributes::Data.new,
+        aria:  Components::Attributes::Aria.new,
+        tag:   Components::Attributes::Hash.new
       }
     end
 
@@ -123,6 +123,7 @@ module Components
     def self.inherited(subclass)
       attributes.each { |name, options| subclass.attribute(name, options) }
       elements.each   { |name, options| subclass.elements[name] = options }
+      subclass.tag_attributes.merge!(tag_attributes)
     end
 
     def initialize(view, attributes = nil, &block)
@@ -193,6 +194,10 @@ module Components
     end
 
     protected
+
+    def render_partial(file)
+      @view.render(partial: file, object: self)
+    end
 
     def initialize_tag_attributes(attributes)
       @tag_attributes = self.class.tag_attributes.each_with_object({}) do |(name, options), obj|
