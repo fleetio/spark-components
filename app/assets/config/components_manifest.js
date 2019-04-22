@@ -1,2 +1,2 @@
-//= link_directory ../javascripts/components .js
-//= link_directory ../stylesheets/components .css
+//= link_directory ../javascripts .js
+//= link_directory ../stylesheets .css
