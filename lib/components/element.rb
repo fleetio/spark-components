@@ -121,9 +121,13 @@ module Components
     private_class_method :define_method_or_raise
 
     def self.inherited(subclass)
-      attributes.each { |name, options| subclass.attribute(name, options) }
-      elements.each   { |name, options| subclass.elements[name] = options }
-      subclass.tag_attributes.merge!(tag_attributes)
+      attributes.each { |name, options| subclass.attribute(name, options.dup) }
+      elements.each   { |name, options| subclass.elements[name] = options.dup }
+
+      subclass.tag_attributes.merge!(tag_attributes.each_with_object({}) { |(k, v), obj|
+        obj[k] = v.dup
+      })
+
     end
 
     def initialize(view, attributes = nil, &block)
@@ -167,7 +171,7 @@ module Components
       classnames.add(*args)
     end
 
-    def child_class(name, separator: '-')
+    def join_class(name, separator: '-')
       [base_class, name].join('-') unless base_class.nil?
     end
 
@@ -213,7 +217,7 @@ module Components
     def initialize_attributes(attributes)
       self.class.attributes.each do |name, options|
         set_instance_variable(name, attributes[name] || (options[:default] && options[:default].dup))
-        update_attr(name)       
+        update_attr(name)
       end
     end
 
