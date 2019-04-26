@@ -15,6 +15,14 @@ module Components
           array << %(#{name.dasherize}="#{value}") unless value.nil?
         end.join(" ").html_safe
       end
+
+      def collapse
+        each_with_object(Hash.new) do |(name, value), obj|
+          name = [prefix, name].compact.join('-')
+          name = name.downcase.gsub(/[\W,_]+/, '-')
+          obj[name] = value unless value.nil? || value.is_a?(String) && value.empty?
+        end
+      end
     end
 
     class Data < Hash

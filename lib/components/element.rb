@@ -90,8 +90,12 @@ module Components
         return get_instance_variable(multiple ? plural_name : name) unless attributes || block
 
         element = self.class.elements[name][:class].new(@view, attributes, &block)
-        element.parent = self
-        element.yield = element.render if element.respond_to?(:render)
+        element.parent= self
+
+        if element.respond_to?(:render)
+          element.pre_render 
+          element.yield = element.render
+        end
 
         if multiple
           get_instance_variable(plural_name) << element
@@ -130,7 +134,7 @@ module Components
 
     end
 
-    def initialize(view, attributes = nil, &block)
+    def initialize(view, attributes, &block)
       @view = view
       attributes ||= {}
       initialize_tag_attributes(attributes)
@@ -141,6 +145,7 @@ module Components
       after_init
     end
 
+    def pre_render; end
     def after_init; end
 
     def parent=(obj)
@@ -148,7 +153,7 @@ module Components
     end
 
     def parent
-      parents.last
+      @parents.last
     end
 
     # Set tag attribute values from from parameters
@@ -188,9 +193,22 @@ module Components
     end
 
     def all_attr(add_class: true)
-      attrs = [data_attr, aria_attr, tag_attr]
-      attrs.unshift %(class="#{classnames}") if add_class
-      attrs.join(' ').html_safe
+      attrs = tag_attr.merge(data_attr.collapse)
+      attrs = attrs.merge(aria_attr.collapse)
+      attrs = attrs.merge(class: classnames) if add_class
+      attrs
+    end
+
+    def concat(*args, &block)
+      @view.concat(*args, &block)
+    end
+
+    def content_tag(*args, &block)
+      @view.content_tag(*args, &block)
+    end
+
+    def component(*args, &block)
+      @view.component(*args, &block)
     end
 
     def to_s
