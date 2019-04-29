@@ -19,7 +19,6 @@ module Components
     end
 
     def render
-      pre_render
       render_partial to_partial_path
     end
 

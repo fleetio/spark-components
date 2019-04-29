@@ -134,7 +134,7 @@ module Components
 
     end
 
-    def initialize(view, attributes, &block)
+    def initialize(view, attributes = nil, &block)
       @view = view
       attributes ||= {}
       initialize_tag_attributes(attributes)
@@ -192,11 +192,15 @@ module Components
       @tag_attributes[:tag].add(*args)
     end
 
-    def all_attr(add_class: true)
-      attrs = tag_attr.merge(data_attr.collapse)
-      attrs = attrs.merge(aria_attr.collapse)
-      attrs = attrs.merge(class: classnames) if add_class
-      attrs
+    def attrs(add_class: true)
+      atr = Attributes::Hash.new
+      # attrtiubte order: id, class, data-, aria-, misc tag attributes
+      atr.merge!(id: tag_attr.delete(:id))
+      atr.merge!(class: classnames) if add_class
+      atr.merge!(data_attr.collapse)
+      atr.merge!(aria_attr.collapse)
+      atr.merge!(tag_attr)
+      atr
     end
 
     def concat(*args, &block)
@@ -205,6 +209,10 @@ module Components
 
     def content_tag(*args, &block)
       @view.content_tag(*args, &block)
+    end
+
+    def link_to(*args, &block)
+      @view.link_to(*args, &block)
     end
 
     def component(*args, &block)

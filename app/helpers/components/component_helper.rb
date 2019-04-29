@@ -1,7 +1,9 @@
 module Components
   module ComponentHelper
     def component(name, attrs = nil, &block)
-      "#{name}_component".classify.constantize.new(self, attrs, &block).render
+      comp = "#{name}_component".classify.constantize.new(self, attrs, &block)
+      comp.pre_render
+      comp.render
     end
   end
 end

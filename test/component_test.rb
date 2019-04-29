@@ -265,7 +265,7 @@ class ComponentTest < ActiveSupport::TestCase
 
     assert_equal "one two three four five", component.classnames.to_s
     assert_equal :one, component.classnames.base
-    assert_equal 'one-two', component.child_class('two')
+    assert_equal 'one-two', component.join_class('two')
   end
 
   test "tag_attr defines component attributes which can modify root tag attributes" do
@@ -310,14 +310,15 @@ class ComponentTest < ActiveSupport::TestCase
     assert_equal %(aria-three="four"), component.aria_attr.to_s
   end
 
-  test "all_attr outputs data, class, aria, and tag attributes" do
+  test "attrs outputs class, data, aria, and tag attributes" do
     component_class = Class.new(Components::Component) do
       tag_attr role: "nav"
+      tag_attr id: "foo"
     end
     component = component_class.new(view_class.new, data: { foo: "bar" }, class: "one two", aria: { three: "four" })
 
-    assert_equal %(class="one two" data-foo="bar" aria-three="four" role="nav"), component.all_attr
-    assert_equal %(data-foo="bar" aria-three="four" role="nav"), component.all_attr(add_class: false)
+    assert_equal %(id="foo" class="one two" data-foo="bar" aria-three="four" role="nav"), component.attrs.to_s
+    assert_equal %(data-foo="bar" aria-three="four" role="nav"), component.attrs(add_class: false).to_s
   end
 
   test "tag attributes are isolated across components" do
