@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class ComponentTest < ActiveSupport::TestCase
@@ -265,7 +267,7 @@ class ComponentTest < ActiveSupport::TestCase
 
     assert_equal "one two three four five", component.classnames.to_s
     assert_equal :one, component.classnames.base
-    assert_equal 'one-two', component.join_class('two')
+    assert_equal "one-two", component.join_class("two")
   end
 
   test "tag_attr defines component attributes which can modify root tag attributes" do

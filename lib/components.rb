@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "components/attributes"
 require "components/element"
 require "components/component"

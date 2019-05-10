@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 module Components
   module Attributes
     class Hash < Hash
       def prefix; end
 
-      def add(obj=nil)
+      def add(obj = nil)
         merge!(obj) unless obj.nil?
         self
       end
@@ -11,15 +13,15 @@ module Components
       # Output all attributes as [base-]name="value"
       def to_s
         each_with_object([]) do |(name, value), array|
-          name = [prefix, name].compact.join('-')
+          name = [prefix, name].compact.join("-")
           array << %(#{name.dasherize}="#{value}") unless value.nil?
         end.join(" ").html_safe
       end
 
       def collapse
-        each_with_object(Hash.new) do |(name, value), obj|
-          name = [prefix, name].compact.join('-')
-          name = name.downcase.gsub(/[\W,_]+/, '-')
+        each_with_object({}) do |(name, value), obj|
+          name = [prefix, name].compact.join("-")
+          name = name.downcase.gsub(/[\W_]+/, "-")
           obj[name] = value unless value.nil? || value.is_a?(String) && value.empty?
         end
       end
@@ -64,7 +66,7 @@ module Components
           @base_set = true
         end
 
-        self.uniq!
+        uniq!
       end
 
       def base

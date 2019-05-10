@@ -1,8 +1,11 @@
 AllCops:
-  TargetRubyVersion: 2.2.2
+  TargetRubyVersion: 2.6.3
 
 Metrics/LineLength:
   Max: 120
+
+Metrics/MethodLength:
+  Max: 15
 
 Metrics/BlockLength:
   Exclude:
@@ -11,12 +14,17 @@ Metrics/BlockLength:
 Metrics/ClassLength:
   Exclude:
     - 'test/**/*.rb'
+    - 'lib/components/element.rb'
 
 Naming/VariableNumber:
   EnforcedStyle: snake_case
 
 Style/Documentation:
   Enabled: false
+
+Style/ClassAndModuleChildren:
+  Exclude:
+    - 'test/tmp/app/components/baz/foobar_component.rb'
 
 Style/IfUnlessModifier:
   Enabled: false

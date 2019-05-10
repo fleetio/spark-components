@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Components
   class Element
     include ActiveModel::Validations
@@ -24,9 +26,9 @@ module Components
     def self.tag_attributes
       @tag_attributes ||= {
         class: Components::Attributes::Classname.new,
-        data:  Components::Attributes::Data.new,
-        aria:  Components::Attributes::Aria.new,
-        tag:   Components::Attributes::Hash.new
+        data: Components::Attributes::Data.new,
+        aria: Components::Attributes::Aria.new,
+        tag: Components::Attributes::Hash.new
       }
     end
 
@@ -90,10 +92,10 @@ module Components
         return get_instance_variable(multiple ? plural_name : name) unless attributes || block
 
         element = self.class.elements[name][:class].new(@view, attributes, &block)
-        element.parent= self
+        element.parent = self
 
         if element.respond_to?(:render)
-          element.pre_render 
+          element.pre_render
           element.yield = element.render
         end
 
@@ -128,10 +130,9 @@ module Components
       attributes.each { |name, options| subclass.attribute(name, options.dup) }
       elements.each   { |name, options| subclass.elements[name] = options.dup }
 
-      subclass.tag_attributes.merge!(tag_attributes.each_with_object({}) { |(k, v), obj|
+      subclass.tag_attributes.merge!(tag_attributes.each_with_object({}) do |(k, v), obj|
         obj[k] = v.dup
-      })
-
+      end)
     end
 
     def initialize(view, attributes = nil, &block)
@@ -146,6 +147,7 @@ module Components
     end
 
     def pre_render; end
+
     def after_init; end
 
     def parent=(obj)
@@ -159,7 +161,7 @@ module Components
     # Set tag attribute values from from parameters
     def update_attr(name)
       %i[aria data tag].each do |el|
-        @tag_attributes[el][name] = get_instance_variable(name) if @tag_attributes[el].has_key?(name)
+        @tag_attributes[el][name] = get_instance_variable(name) if @tag_attributes[el].key?(name)
       end
     end
 
@@ -167,7 +169,7 @@ module Components
       @tag_attributes[:class]
     end
 
-    def base_class(name=nil)
+    def base_class(name = nil)
       classnames.base = name unless name.nil?
       classnames.base
     end
@@ -176,8 +178,8 @@ module Components
       classnames.add(*args)
     end
 
-    def join_class(name, separator: '-')
-      [base_class, name].join('-') unless base_class.nil?
+    def join_class(name, separator: "-")
+      [base_class, name].join(separator) unless base_class.nil?
     end
 
     def data_attr(*args)
@@ -195,8 +197,8 @@ module Components
     def attrs(add_class: true)
       atr = Attributes::Hash.new
       # attrtiubte order: id, class, data-, aria-, misc tag attributes
-      atr.merge!(id: tag_attr.delete(:id))
-      atr.merge!(class: classnames) if add_class
+      atr[:id] = tag_attr.delete(:id)
+      atr[:class] = classnames if add_class
       atr.merge!(data_attr.collapse)
       atr.merge!(aria_attr.collapse)
       atr.merge!(tag_attr)

@@ -1,31 +1,33 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class AttributesTest < ActiveSupport::TestCase
   test "Hash attribute generates html attribute format on to_s" do
     attr = Components::Attributes::Hash.new
     attr.add foo: :bar
-    
+
     assert_equal %(foo="bar"), attr.to_s
   end
 
   test "Data attribute hash generates html data- format on to_s" do
     attr = Components::Attributes::Data.new
     attr.add foo_bar: :baz
-    
+
     assert_equal %(data-foo-bar="baz"), attr.to_s
   end
 
   test "Aria attribute hash generates html aria- format on to_s" do
     attr = Components::Attributes::Aria.new
     attr.add foo_bar: :baz
-    
+
     assert_equal %(aria-foo-bar="baz"), attr.to_s
   end
 
   test "Classname attribute outputs space separated classnames on to_s" do
     attr = Components::Attributes::Classname.new
     attr.add :foo, :bar, :baz
-    
+
     assert_equal "foo bar baz", attr.to_s
   end
 
