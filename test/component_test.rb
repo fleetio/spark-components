@@ -42,7 +42,7 @@ class ComponentTest < ActiveSupport::TestCase
 
   test "initialize attribute with default value" do
     component_class = Class.new(Components::Component) do
-      attribute :foo, default: "foo"
+      attribute foo: "foo"
     end
     component = component_class.new(view_class.new)
     assert_equal "foo", component.foo
@@ -157,7 +157,7 @@ class ComponentTest < ActiveSupport::TestCase
 
   test "initialize with default value and successfull validation" do
     component_class = Class.new(Components::Component) do
-      attribute :foo, default: "bar"
+      attribute foo: "bar"
       validates :foo, presence: true
     end
     assert_nothing_raised { component_class.new(view_class.new) }
@@ -217,7 +217,7 @@ class ComponentTest < ActiveSupport::TestCase
 
   test "element can render a component" do
     base_component_class = Class.new(Components::Component) do
-      attribute :tag, default: :h1
+      attribute tag: :h1
 
       def render
         "<#{tag}>#{self}</#{tag}>"
@@ -281,6 +281,15 @@ class ComponentTest < ActiveSupport::TestCase
     assert_equal %(foo="baz" bar="true" a="b"), component.tag_attr.to_s
   end
 
+  test "splat option allows assignment of root tag attributes" do
+    component_class = Class.new(Components::Component)
+    component = component_class.new(view_class.new, splat: { foo: "baz"})
+    assert_equal %(foo="baz"), component.tag_attr.to_s
+
+    component.tag_attr.add bar: true
+    assert_equal %(foo="baz" bar="true"), component.tag_attr.to_s
+  end
+
   test "data_attr defines component attributes which can modify data- attributes" do
     component_class = Class.new(Components::Component) do
       data_attr :foo, :bar, a: "b"
@@ -314,8 +323,7 @@ class ComponentTest < ActiveSupport::TestCase
 
   test "attrs outputs class, data, aria, and tag attributes" do
     component_class = Class.new(Components::Component) do
-      tag_attr role: "nav"
-      tag_attr id: "foo"
+      tag_attr role: "nav", id: "foo"
     end
     component = component_class.new(view_class.new, data: { foo: "bar" }, class: "one two", aria: { three: "four" })
 
@@ -325,7 +333,7 @@ class ComponentTest < ActiveSupport::TestCase
 
   test "tag attributes are isolated across components" do
     component_class = Class.new(Components::Component) do
-      add_attributes type: "default"
+      attribute type: "default"
 
       def after_init
         add_class "type-#{@type}"

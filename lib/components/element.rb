@@ -15,25 +15,30 @@ module Components
       @attributes ||= {}
     end
 
-    def self.attribute(name, default: nil)
+    def self.elements
+      @elements ||= {}
+    end
+
+    def self.attribute(*args)
+      args.each_with_object({}) do |arg, obj|
+        if arg.is_a?(Hash)
+          arg.each do |attr, default|
+            obj[attr.to_sym] = default
+            set_attribute(attr.to_sym, default: default)
+          end
+        else
+          obj[arg.to_sym] = nil
+          set_attribute(arg.to_sym)
+        end
+      end
+    end
+
+    def self.set_attribute(name, default: nil)
       attributes[name] = { default: default }
 
       define_method_or_raise(name) do
         get_instance_variable(name)
       end
-    end
-
-    def self.tag_attributes
-      @tag_attributes ||= {
-        class: Components::Attributes::Classname.new,
-        data: Components::Attributes::Data.new,
-        aria: Components::Attributes::Aria.new,
-        tag: Components::Attributes::Hash.new
-      }
-    end
-
-    def self.set_attr(name, *args)
-      tag_attributes[name].add(add_attributes(*args))
     end
 
     def self.base_class(name)
@@ -56,22 +61,17 @@ module Components
       set_attr(:tag, *args)
     end
 
-    def self.add_attributes(*args)
-      args.each_with_object({}) do |arg, obj|
-        if arg.is_a?(Hash)
-          arg.each do |attr, default|
-            obj[attr.to_sym] = default
-            attribute(attr.to_sym, default: default)
-          end
-        else
-          obj[arg.to_sym] = nil
-          attribute(arg.to_sym)
-        end
-      end
+    def self.set_attr(name, *args)
+      tag_attributes[name].add(attribute(*args))
     end
 
-    def self.elements
-      @elements ||= {}
+    def self.tag_attributes
+      @tag_attributes ||= {
+        class: Components::Attributes::Classname.new,
+        data: Components::Attributes::Data.new,
+        aria: Components::Attributes::Aria.new,
+        tag: Components::Attributes::Hash.new
+      }
     end
 
     # rubocop:disable Metrics/AbcSize
@@ -127,7 +127,7 @@ module Components
     private_class_method :define_method_or_raise
 
     def self.inherited(subclass)
-      attributes.each { |name, options| subclass.attribute(name, options.dup) }
+      attributes.each { |name, options| subclass.set_attribute(name, options.dup) }
       elements.each   { |name, options| subclass.elements[name] = options.dup }
 
       subclass.tag_attributes.merge!(tag_attributes.each_with_object({}) do |(k, v), obj|
@@ -240,6 +240,7 @@ module Components
       data_attr(attributes.delete(:data)) if attributes[:data]
       aria_attr(attributes.delete(:aria)) if attributes[:aria]
       add_class(*attributes.delete(:class)) if attributes[:class]
+      tag_attr(attributes.delete(:splat)) if attributes[:splat]
     end
 
     def initialize_attributes(attributes)

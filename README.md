@@ -104,8 +104,7 @@ Let's define some attributes for the component we just created:
 # app/components/alert_component.rb %>
 
 class AlertComponent < Components::Component
-  attribute :context
-  attribute :message
+  attribute :context, :message
 end
 ```
 
@@ -179,8 +178,7 @@ Attributes can have default values:
 # app/components/alert_component.rb %>
 
 class AlertComponent < Components::Component
-  attribute :message
-  attribute :context, default: "primary"
+  attribute :message, context: "primary"
 end
 ```
 
@@ -192,8 +190,7 @@ It's easy to override an attribute with additional logic:
 # app/components/alert_component.rb %>
 
 class AlertComponent < Components::Component
-  attribute :message
-  attribute :context, default: "primary"
+  attribute :message, context: "primary"
 
   def message
     @message.upcase if context == "danger"
@@ -251,10 +248,10 @@ Using this gem, the same component can be written like this:
 # app/components/card_component.rb %>
 
 class CardComponent < Components::Component
-  attribute :flush, default: false
+  attribute flush: false
 
   element :header do
-    attribute :centered, default: false
+    attribute centered: false
   end
 
   element :section, multiple: true do
@@ -313,9 +310,7 @@ Another good use case is a navigation component:
 
 class NavigationComponent < Components::Component
   element :items, multiple: true do
-    attribute :label
-    attribute :url
-    attribute :active, default: false
+    attribute :label, :url, active: false
   end
 end
 ```
@@ -338,9 +333,7 @@ Elements can have validations, too:
 ```ruby
 class NavigationComponent < Components::Component
   element :items, multiple: true do
-    attribute :label
-    attribute :url
-    attribute :active, default: false
+    attribute :label, :url, active: false
     
     validates :label, presence: true
     validates :url, presence: true
@@ -433,9 +426,7 @@ For some small components, such as buttons, it might make sense to skip the part
 # app/components/button_component.rb %>
 
 class ButtonComponent < Components::Component
-  attribute :label
-  attribute :url
-  attribute :context
+  attribute :label, :url, :context
 
   def render
     @view.link_to label, url, class: css_classes
@@ -478,9 +469,7 @@ You can easily render a component within another component. In this example the 
 # app/components/nav_item_component.rb %>
 
 class NavItemComponent < Components::Components
-  attribute :name
-  attribute :url
-  attribute :icon
+  attribute :name, :url, :icon
 end
 ```
 
