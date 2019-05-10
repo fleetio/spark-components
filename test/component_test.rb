@@ -4,20 +4,20 @@ require "test_helper"
 
 class ComponentTest < ActiveSupport::TestCase
   test "initialize with nothing" do
-    component_class = Class.new(Components::Component)
+    component_class = Class.new(SparkComponents::Component)
     component = component_class.new(view_class.new)
     assert_nil component.to_s
   end
 
   test "initialize with block" do
-    component_class = Class.new(Components::Component)
+    component_class = Class.new(SparkComponents::Component)
     component = component_class.new(view_class.new) { "foo" }
     assert_equal "foo", component.to_s
   end
 
   test "initialize by overwriting existing method with attribute" do
-    e = assert_raises(Components::Error) do
-      Class.new(Components::Component) do
+    e = assert_raises(SparkComponents::Error) do
+      Class.new(SparkComponents::Component) do
         attribute :to_s
       end
     end
@@ -25,7 +25,7 @@ class ComponentTest < ActiveSupport::TestCase
   end
 
   test "initialize attribute with no value" do
-    component_class = Class.new(Components::Component) do
+    component_class = Class.new(SparkComponents::Component) do
       attribute :foo
     end
     component = component_class.new(view_class.new)
@@ -33,7 +33,7 @@ class ComponentTest < ActiveSupport::TestCase
   end
 
   test "initialize attribute with value" do
-    component_class = Class.new(Components::Component) do
+    component_class = Class.new(SparkComponents::Component) do
       attribute :foo
     end
     component = component_class.new(view_class.new, foo: "foo")
@@ -41,7 +41,7 @@ class ComponentTest < ActiveSupport::TestCase
   end
 
   test "initialize attribute with default value" do
-    component_class = Class.new(Components::Component) do
+    component_class = Class.new(SparkComponents::Component) do
       attribute foo: "foo"
     end
     component = component_class.new(view_class.new)
@@ -49,8 +49,8 @@ class ComponentTest < ActiveSupport::TestCase
   end
 
   test "initialize by overwriting existing method with element" do
-    e = assert_raises(Components::Error) do
-      Class.new(Components::Component) do
+    e = assert_raises(SparkComponents::Error) do
+      Class.new(SparkComponents::Component) do
         def foo
           "foo"
         end
@@ -62,7 +62,7 @@ class ComponentTest < ActiveSupport::TestCase
   end
 
   test "initialize element with block" do
-    component_class = Class.new(Components::Component) do
+    component_class = Class.new(SparkComponents::Component) do
       element :foo
     end
     component = component_class.new(view_class.new)
@@ -71,7 +71,7 @@ class ComponentTest < ActiveSupport::TestCase
   end
 
   test "initialize element with attribute with value" do
-    component_class = Class.new(Components::Component) do
+    component_class = Class.new(SparkComponents::Component) do
       element :foo do
         attribute :bar
       end
@@ -82,7 +82,7 @@ class ComponentTest < ActiveSupport::TestCase
   end
 
   test "initialize element with block with nested element with block" do
-    component_class = Class.new(Components::Component) do
+    component_class = Class.new(SparkComponents::Component) do
       element :foo do
         element :bar
       end
@@ -99,7 +99,7 @@ class ComponentTest < ActiveSupport::TestCase
   end
 
   test "initialize element with multiple true" do
-    component_class = Class.new(Components::Component) do
+    component_class = Class.new(SparkComponents::Component) do
       element :foo, multiple: true
     end
     component = component_class.new(view_class.new)
@@ -111,7 +111,7 @@ class ComponentTest < ActiveSupport::TestCase
   end
 
   test "initialize element with multiple true when singular and plural name are the same" do
-    component_class = Class.new(Components::Component) do
+    component_class = Class.new(SparkComponents::Component) do
       element :foos, multiple: true
     end
     component = component_class.new(view_class.new)
@@ -123,7 +123,7 @@ class ComponentTest < ActiveSupport::TestCase
   end
 
   test "get element when not set" do
-    component_class = Class.new(Components::Component) do
+    component_class = Class.new(SparkComponents::Component) do
       element :foo
     end
     component = component_class.new(view_class.new)
@@ -131,7 +131,7 @@ class ComponentTest < ActiveSupport::TestCase
   end
 
   test "get element with multiple true when not set" do
-    component_class = Class.new(Components::Component) do
+    component_class = Class.new(SparkComponents::Component) do
       element :foo, multiple: true
     end
     component = component_class.new(view_class.new)
@@ -139,7 +139,7 @@ class ComponentTest < ActiveSupport::TestCase
   end
 
   test "initialize with given attribute and successfull validation" do
-    component_class = Class.new(Components::Component) do
+    component_class = Class.new(SparkComponents::Component) do
       attribute :foo
       validates :foo, presence: true
     end
@@ -147,7 +147,7 @@ class ComponentTest < ActiveSupport::TestCase
   end
 
   test "initialize without attribute and failing validation" do
-    component_class = Class.new(Components::Component) do
+    component_class = Class.new(SparkComponents::Component) do
       attribute :foo
       validates :foo, presence: true
     end
@@ -156,7 +156,7 @@ class ComponentTest < ActiveSupport::TestCase
   end
 
   test "initialize with default value and successfull validation" do
-    component_class = Class.new(Components::Component) do
+    component_class = Class.new(SparkComponents::Component) do
       attribute foo: "bar"
       validates :foo, presence: true
     end
@@ -164,7 +164,7 @@ class ComponentTest < ActiveSupport::TestCase
   end
 
   test "initialize element and successfull element validation" do
-    component_class = Class.new(Components::Component) do
+    component_class = Class.new(SparkComponents::Component) do
       element :foo
       validates :foo, presence: true
     end
@@ -176,7 +176,7 @@ class ComponentTest < ActiveSupport::TestCase
   end
 
   test "initialize element and failing element validation" do
-    component_class = Class.new(Components::Component) do
+    component_class = Class.new(SparkComponents::Component) do
       element :foo
       validates :foo, presence: true
     end
@@ -187,7 +187,7 @@ class ComponentTest < ActiveSupport::TestCase
   end
 
   test "initialize element and successfull element attribute validation" do
-    component_class = Class.new(Components::Component) do
+    component_class = Class.new(SparkComponents::Component) do
       element :foo do
         attribute :bar
         validates :bar, presence: true
@@ -201,7 +201,7 @@ class ComponentTest < ActiveSupport::TestCase
   end
 
   test "initialize element and failing element attribute validation" do
-    component_class = Class.new(Components::Component) do
+    component_class = Class.new(SparkComponents::Component) do
       element :foo do
         attribute :bar
         validates :bar, presence: true
@@ -216,7 +216,7 @@ class ComponentTest < ActiveSupport::TestCase
   end
 
   test "element can render a component" do
-    base_component_class = Class.new(Components::Component) do
+    base_component_class = Class.new(SparkComponents::Component) do
       attribute tag: :h1
 
       def render
@@ -224,7 +224,7 @@ class ComponentTest < ActiveSupport::TestCase
       end
     end
 
-    component_class = Class.new(Components::Component) do
+    component_class = Class.new(SparkComponents::Component) do
       element :header, component: base_component_class
     end
 
@@ -235,7 +235,7 @@ class ComponentTest < ActiveSupport::TestCase
   end
 
   test "elements should be able to interact with their parent component" do
-    list_component = Class.new(Components::Component) do
+    list_component = Class.new(SparkComponents::Component) do
       element :item, multiple: true
 
       element :group do
@@ -259,7 +259,7 @@ class ComponentTest < ActiveSupport::TestCase
   end
 
   test "class_attr and base_class modify the default classname attribute" do
-    component_class = Class.new(Components::Component) do
+    component_class = Class.new(SparkComponents::Component) do
       base_class :one
       add_class :two, :three
     end
@@ -271,7 +271,7 @@ class ComponentTest < ActiveSupport::TestCase
   end
 
   test "tag_attr defines component attributes which can modify root tag attributes" do
-    component_class = Class.new(Components::Component) do
+    component_class = Class.new(SparkComponents::Component) do
       tag_attr :foo, :bar, a: "b"
     end
     component = component_class.new(view_class.new, foo: "baz")
@@ -282,7 +282,7 @@ class ComponentTest < ActiveSupport::TestCase
   end
 
   test "splat option allows assignment of root tag attributes" do
-    component_class = Class.new(Components::Component)
+    component_class = Class.new(SparkComponents::Component)
     component = component_class.new(view_class.new, splat: { foo: "baz"})
     assert_equal %(foo="baz"), component.tag_attr.to_s
 
@@ -291,7 +291,7 @@ class ComponentTest < ActiveSupport::TestCase
   end
 
   test "data_attr defines component attributes which can modify data- attributes" do
-    component_class = Class.new(Components::Component) do
+    component_class = Class.new(SparkComponents::Component) do
       data_attr :foo, :bar, a: "b"
     end
     component = component_class.new(view_class.new, foo: "baz")
@@ -302,7 +302,7 @@ class ComponentTest < ActiveSupport::TestCase
   end
 
   test "aria_attr defines component attributes which can modify aria- attributes" do
-    component_class = Class.new(Components::Component) do
+    component_class = Class.new(SparkComponents::Component) do
       aria_attr :foo, :bar, a: "b"
     end
     component = component_class.new(view_class.new, foo: "baz")
@@ -313,7 +313,7 @@ class ComponentTest < ActiveSupport::TestCase
   end
 
   test "data, class, and aria component options sets default attributes" do
-    component_class = Class.new(Components::Component)
+    component_class = Class.new(SparkComponents::Component)
     component = component_class.new(view_class.new, data: { foo: "bar" }, class: "one two", aria: { three: "four" })
 
     assert_equal %(data-foo="bar"), component.data_attr.to_s
@@ -322,7 +322,7 @@ class ComponentTest < ActiveSupport::TestCase
   end
 
   test "attrs outputs class, data, aria, and tag attributes" do
-    component_class = Class.new(Components::Component) do
+    component_class = Class.new(SparkComponents::Component) do
       tag_attr role: "nav", id: "foo"
     end
     component = component_class.new(view_class.new, data: { foo: "bar" }, class: "one two", aria: { three: "four" })
@@ -332,7 +332,7 @@ class ComponentTest < ActiveSupport::TestCase
   end
 
   test "tag attributes are isolated across components" do
-    component_class = Class.new(Components::Component) do
+    component_class = Class.new(SparkComponents::Component) do
       attribute type: "default"
 
       def after_init

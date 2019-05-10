@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require "components/attributes"
-require "components/element"
-require "components/component"
-require "components/engine"
+require "spark_components/attributes"
+require "spark_components/element"
+require "spark_components/component"
+require "spark_components/engine"
 
-module Components
+module SparkComponents
   class Error < StandardError; end
 
   def self.components_path

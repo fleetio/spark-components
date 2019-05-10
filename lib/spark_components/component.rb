@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-module Components
+module SparkComponents
   class Component < Element
     def self.model_name
-      ActiveModel::Name.new(Components::Component)
+      ActiveModel::Name.new(SparkComponents::Component)
     end
 
     def self.component_name

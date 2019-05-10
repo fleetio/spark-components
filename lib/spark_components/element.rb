@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Components
+module SparkComponents
   class Element
     include ActiveModel::Validations
 
@@ -8,7 +8,7 @@ module Components
     attr_reader :parents, :attr
 
     def self.model_name
-      ActiveModel::Name.new(Components::Element)
+      ActiveModel::Name.new(SparkComponents::Element)
     end
 
     def self.attributes
@@ -67,10 +67,10 @@ module Components
 
     def self.tag_attributes
       @tag_attributes ||= {
-        class: Components::Attributes::Classname.new,
-        data: Components::Attributes::Data.new,
-        aria: Components::Attributes::Aria.new,
-        tag: Components::Attributes::Hash.new
+        class: SparkComponents::Attributes::Classname.new,
+        data: SparkComponents::Attributes::Data.new,
+        aria: SparkComponents::Attributes::Aria.new,
+        tag: SparkComponents::Attributes::Hash.new
       }
     end
 
@@ -120,7 +120,7 @@ module Components
     def self.define_method_or_raise(method_name, &block)
       # Select instance methods but not those which are intance methods received by extending a class
       methods = (instance_methods - superclass.instance_methods(false))
-      raise(Components::Error, "Method '#{method_name}' already exists.") if methods.include?(method_name.to_sym)
+      raise(SparkComponents::Error, "Method '#{method_name}' already exists.") if methods.include?(method_name.to_sym)
 
       define_method(method_name, &block)
     end

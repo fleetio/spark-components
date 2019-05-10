@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Components
+module SparkComponents
   module Attributes
     class Hash < Hash
       def prefix; end

@@ -1,4 +1,4 @@
-# Components
+# Spark Components
 
 Simple view components for Rails 5.1+, designed to go well with [styleguide](https://github.com/jensljungblad/styleguide). The two together are inspired by the works of [Brad Frost](http://bradfrost.com) and by the [thoughts behind](http://engineering.lonelyplanet.com/2014/05/18/a-maintainable-styleguide.html) Lonely Planet's style guide [Rizzo](http://rizzo.lonelyplanet.com).
 
@@ -7,7 +7,7 @@ Simple view components for Rails 5.1+, designed to go well with [styleguide](htt
 Add this line to your application's Gemfile:
 
 ```ruby
-gem "components", git: "https://github.com/fleetio/components.git"
+gem "spark_components"
 ```
 
 And then execute:
@@ -103,7 +103,7 @@ Let's define some attributes for the component we just created:
 ```ruby
 # app/components/alert_component.rb %>
 
-class AlertComponent < Components::Component
+class AlertComponent < SparkComponents::Component
   attribute :context, :message
 end
 ```
@@ -142,7 +142,7 @@ Another good use case for attributes is when you have a component backed by a mo
 ```ruby
 # app/components/comment_component.rb %>
 
-class CommentComponent < Components::Component
+class CommentComponent < SparkComponents::Component
   attribute :comment
 
   delegate :id,
@@ -177,7 +177,7 @@ Attributes can have default values:
 ```ruby
 # app/components/alert_component.rb %>
 
-class AlertComponent < Components::Component
+class AlertComponent < SparkComponents::Component
   attribute :message, context: "primary"
 end
 ```
@@ -189,7 +189,7 @@ It's easy to override an attribute with additional logic:
 ```ruby
 # app/components/alert_component.rb %>
 
-class AlertComponent < Components::Component
+class AlertComponent < SparkComponents::Component
   attribute :message, context: "primary"
 
   def message
@@ -205,7 +205,7 @@ To ensure your components get initialized properly you can use `ActiveModel::Val
 ```ruby
 # app/components/alert_component.rb %>
 
-class AlertComponent < Components::Component
+class AlertComponent < SparkComponents::Component
   attribute :label
   
   validates :label, presence: true
@@ -247,7 +247,7 @@ Using this gem, the same component can be written like this:
 ```ruby
 # app/components/card_component.rb %>
 
-class CardComponent < Components::Component
+class CardComponent < SparkComponents::Component
   attribute flush: false
 
   element :header do
@@ -308,7 +308,7 @@ Another good use case is a navigation component:
 ```ruby
 # app/components/navigation_component.rb %>
 
-class NavigationComponent < Components::Component
+class NavigationComponent < SparkComponents::Component
   element :items, multiple: true do
     attribute :label, :url, active: false
   end
@@ -331,7 +331,7 @@ An alternative here is to pass a data structure to the component as an attribute
 Elements can have validations, too:
 
 ```ruby
-class NavigationComponent < Components::Component
+class NavigationComponent < SparkComponents::Component
   element :items, multiple: true do
     attribute :label, :url, active: false
     
@@ -346,7 +346,7 @@ Elements can also be nested, although it is recommended to keep nesting to a min
 ```ruby
 # app/components/card_component.rb %>
 
-class CardComponent < Components::Component
+class CardComponent < SparkComponents::Component
   ...
 
   element :section, multiple: true do
@@ -365,7 +365,7 @@ In addition to declaring attributes and elements, it is also possible to declare
 ```ruby
 # app/components/card_component.rb %>
 
-class CardComponent < Components::Component
+class CardComponent < SparkComponents::Component
   ...
 
   def css_classes
@@ -389,7 +389,7 @@ It's even possible to declare helpers on elements:
 ```ruby
 # app/components/card_component.rb %>
 
-class CardComponent < Components::Component
+class CardComponent < SparkComponents::Component
   ...
 
   element :section, multiple: true do
@@ -425,7 +425,7 @@ For some small components, such as buttons, it might make sense to skip the part
 ```ruby
 # app/components/button_component.rb %>
 
-class ButtonComponent < Components::Component
+class ButtonComponent < SparkComponents::Component
   attribute :label, :url, :context
 
   def render
@@ -451,7 +451,7 @@ Components can be nested under a namespace. This is useful if you want to practi
 
 ```ruby
 module Objects
-  class MediaObject < Components::Component; end
+  class MediaObject < SparkComponents::Component; end
 end
 ```
 
@@ -468,7 +468,7 @@ You can easily render a component within another component. In this example the 
 ```ruby
 # app/components/nav_item_component.rb %>
 
-class NavItemComponent < Components::Components
+class NavItemComponent < SparkComponents::Components
   attribute :name, :url, :icon
 end
 ```
@@ -476,7 +476,7 @@ end
 ```ruby
 # app/components/tabs_component.rb %>
 
-class TabsComponent < Components::Components
+class TabsComponent < SparkComponents::Components
   element :tab, multiple: true, component: 'nav_item'
 end
 ```
@@ -484,7 +484,7 @@ end
 ```ruby
 # app/components/breadcrumb_component.rb %>
 
-class BreadcrumbComponent < Components::Components
+class BreadcrumbComponent < SparkComponents::Components
   element :crumb, multiple: true, component: 'nav_item'
 end
 ```

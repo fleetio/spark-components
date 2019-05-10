@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class CommentComponent < Components::Component
+class CommentComponent < SparkComponents::Component
   attribute :comment
 
   delegate :user,
